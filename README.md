@@ -1,16 +1,45 @@
-# flutter_calculator
+# Calculadora Mágica
 
-A new Flutter project.
+Una calculadora Flutter funcional con un **truco de magia** oculto.
 
-## Getting Started
+## Características
 
-This project is a starting point for a Flutter application.
+-   **Calculadora Estándar**: Realiza operaciones básicas (suma, resta, multiplicación, división).
+-   **Modo Mágico**: Un modo secreto que permite realizar una predicción "imposible".
 
-A few resources to get you started if this is your first Flutter project:
+## ¿Cómo funciona el Truco de Magia?
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+El truco consiste en predecir un código de fecha y hora futuro (la hora actual + 1 minuto).
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Pasos para realizar el truco:
+
+1.  **Preparación**: Asegúrate de que tu "espectador" te dé un número inicial o escribe tú uno aleatorio.
+2.  **Activación**: Haz **doble clic** discretamente en el botón `+`.
+    -   *Indicador Visual*: El título de la aplicación cambiará sutilmente a "Calculadora ."
+3.  **La "Suma"**:
+    -   Pide al espectador que escriba un número grande de 10 dígitos (por ejemplo, su teléfono, una fecha, etc.).
+    -   **El Secreto**: No importa qué números pulse el espectador; la calculadora introducirá automáticamente los dígitos necesarios para que la suma dé el resultado objetivo.
+    -   *Nota*: Otros botones como `C`, `.` o los operadores están desactivados durante este paso para evitar errores.
+4.  **Finalización**:
+    -   Una vez introducidos los 10 dígitos, el título volverá a ser "Calculadora".
+    -   Pulsa `=`.
+5.  **El Resultado**:
+    -   El resultado será una secuencia de números que coincidirá exactamente con la fecha y hora n ese momento (+ 1 minuto de margen), formateado como `ddmmyyhhmm`.
+    -   ¡Sorprende a tu audiencia revelando que el resultado es la hora exacta en el futuro!
+
+## Instalación y Ejecución
+
+Este proyecto es una aplicación Flutter estándar.
+
+```bash
+# Obtener dependencias
+flutter pub get
+
+# Ejecutar la aplicación
+flutter run
+```
+
+## Requisitos
+
+-   Flutter SDK
+-   Dart SDK
