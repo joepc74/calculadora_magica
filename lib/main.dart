@@ -94,9 +94,9 @@ class _CalculatorHomeState extends State<CalculatorHome> {
       // So we MUST manually modify _expression here.
 
       if (_expression == '0') {
-        _expression = '+';
+        _expression = (diffInt < 0) ? '-' : '+';
       } else {
-        _expression += '+';
+        _expression += (diffInt < 0) ? '-' : '+';
       }
     });
   }
