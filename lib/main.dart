@@ -108,9 +108,8 @@ class _CalculatorHomeState extends State<CalculatorHome> {
 
   void _onButtonPressed(String text) {
     setState(() {
+      bool isNumber = RegExp(r'[0-9]').hasMatch(text);
       if (_checkSpecialMode) {
-        bool isNumber = RegExp(r'[0-9]').hasMatch(text);
-
         // Block everything except Numbers and '='
         // We explicitly allowed manual '+' addition in _startSpecialMode via direct state mod.
         if (!isNumber && text != '=') {
@@ -156,10 +155,28 @@ class _CalculatorHomeState extends State<CalculatorHome> {
           _result = 'Error';
         }
       } else {
-        if (_expression == '0') {
+        if (isNumber && _expression == '0') {
+          // si se introduce un numero y la expresion es 0, reemplaza
           _expression = text;
+        } else if (!isNumber && _expression.isEmpty) {
+          // si se introduce un operador y la expresion esta vacia, pone 0 delante
+          _expression = '0$text';
         } else {
-          _expression += text;
+          // Check for operator replacement
+          if (['+', '-', '*', '/'].contains(text) &&
+              _expression.isNotEmpty &&
+              [
+                '+',
+                '-',
+                '*',
+                '/',
+              ].contains(_expression[_expression.length - 1])) {
+            // si se introduce un operador y la expresion no esta vacia y el ultimo caracter es un operador, reemplaza
+            _expression =
+                _expression.substring(0, _expression.length - 1) + text;
+          } else {
+            _expression += text;
+          }
         }
       }
     });

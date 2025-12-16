@@ -1,4 +1,4 @@
-package com.example.flutter_calculator
+package com.joecolino.calculadora_magica
 
 import io.flutter.embedding.android.FlutterActivity
 
