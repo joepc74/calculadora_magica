@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const CalculatorApp());
@@ -31,6 +32,19 @@ class CalculatorHome extends StatefulWidget {
 }
 
 class _CalculatorHomeState extends State<CalculatorHome> {
+  @override
+  void initState() {
+    super.initState();
+    _loadSpecialTarget();
+  }
+
+  Future<void> _loadSpecialTarget() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _customSpecialTarget = prefs.getDouble('customSpecialTarget');
+    });
+  }
+
   String _expression = '';
   String _result = '0';
 
@@ -38,6 +52,44 @@ class _CalculatorHomeState extends State<CalculatorHome> {
   bool _checkSpecialMode = false;
   String _specialSequence = '';
   int _specialSequenceIndex = 0;
+  double? _customSpecialTarget;
+
+  void _resetSpecialTarget() {
+    setState(() {
+      _customSpecialTarget = null;
+      _removeSpecialTargetFromPrefs();
+      if (kDebugMode) {
+        debugPrint('Custom special target reset');
+      }
+    });
+  }
+
+  Future<void> _removeSpecialTargetFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('customSpecialTarget');
+  }
+
+  void _storeSpecialTarget() {
+    if (_expression != 'Error' && _expression.isNotEmpty) {
+      setState(() {
+        try {
+          _customSpecialTarget = double.parse(_expression);
+          _saveSpecialTargetToPrefs(_customSpecialTarget!);
+          _expression = "";
+          if (kDebugMode) {
+            debugPrint('Custom special target stored: $_customSpecialTarget');
+          }
+        } catch (e) {
+          _customSpecialTarget = null;
+        }
+      });
+    }
+  }
+
+  Future<void> _saveSpecialTargetToPrefs(double value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('customSpecialTarget', value);
+  }
 
   void _startSpecialMode() {
     setState(() {
@@ -58,17 +110,22 @@ class _CalculatorHomeState extends State<CalculatorHome> {
       }
 
       // 2. Calculate Target (Date Time Code)
-      // Current time + 1 minute
-      final now = DateTime.now().add(const Duration(minutes: 1));
-      // Format as ddmmyyhhmm
-      String targetStr =
-          '${_twoDigits(now.day)}'
-          '${_twoDigits(now.month)}'
-          '${_twoDigits(now.year % 100)}'
-          '${_twoDigits(now.hour)}'
-          '${_twoDigits(now.minute)}';
+      double targetValue;
+      if (_customSpecialTarget != null) {
+        targetValue = _customSpecialTarget!;
+      } else {
+        // Current time + 1 minute
+        final now = DateTime.now().add(const Duration(minutes: 1));
+        // Format as ddmmyyhhmm
+        String targetStr =
+            '${_twoDigits(now.day)}'
+            '${_twoDigits(now.month)}'
+            '${_twoDigits(now.year % 100)}'
+            '${_twoDigits(now.hour)}'
+            '${_twoDigits(now.minute)}';
 
-      double targetValue = double.parse(targetStr);
+        targetValue = double.parse(targetStr);
+      }
 
       // 3. Calculate Difference
       double diff = targetValue - currentValue;
@@ -313,8 +370,12 @@ class _CalculatorHomeState extends State<CalculatorHome> {
                       children: [
                         _buildButton(
                           'C',
-                          color: Colors.red[100],
-                          textColor: Colors.red,
+                          color: Colors
+                              .red[_customSpecialTarget != null ? 300 : 100],
+                          textColor: _customSpecialTarget != null
+                              ? Colors.white
+                              : Colors.red,
+                          onDoubleTap: _resetSpecialTarget,
                         ),
                         _buildButton('0'),
                         _buildButton('.', color: Colors.grey[200]),
@@ -334,6 +395,7 @@ class _CalculatorHomeState extends State<CalculatorHome> {
                           '=',
                           color: Colors.deepPurple,
                           textColor: Colors.white,
+                          onDoubleTap: _storeSpecialTarget,
                         ),
                       ],
                     ),
