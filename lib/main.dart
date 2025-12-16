@@ -53,6 +53,7 @@ class _CalculatorHomeState extends State<CalculatorHome> {
   String _specialSequence = '';
   int _specialSequenceIndex = 0;
   double? _customSpecialTarget;
+  String _lastChar = '';
 
   void _resetSpecialTarget() {
     setState(() {
@@ -190,11 +191,13 @@ class _CalculatorHomeState extends State<CalculatorHome> {
       }
 
       if (text == 'C') {
+        _lastChar = 'C';
         _expression = '';
         _result = '0';
         _checkSpecialMode = false; // Reset special mode on Clear
         _specialSequenceIndex = 0;
       } else if (text == '=') {
+        _lastChar = '=';
         _checkSpecialMode = false; // Reset special mode on =
         _specialSequenceIndex = 0;
 
@@ -212,9 +215,13 @@ class _CalculatorHomeState extends State<CalculatorHome> {
           _result = 'Error';
         }
       } else {
-        if (isNumber && _expression == '0') {
+        if (isNumber && (_expression == '0' || _lastChar == '=')) {
           // si se introduce un numero y la expresion es 0, reemplaza
+          // o si se introduce un numero y el ultimo caracter es =, reemplaza para empezar nueva operacion
           _expression = text;
+        } else if (!isNumber && _lastChar == '=') {
+          // tras una operacion, si se introduce un operador, se pone el resultado delante
+          _expression = '$_result$text';
         } else if (!isNumber && _expression.isEmpty) {
           // si se introduce un operador y la expresion esta vacia, pone 0 delante
           _expression = '0$text';
@@ -235,6 +242,7 @@ class _CalculatorHomeState extends State<CalculatorHome> {
             _expression += text;
           }
         }
+        _lastChar = text;
       }
     });
   }
