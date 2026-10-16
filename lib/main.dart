@@ -48,6 +48,22 @@ class _CalculatorHomeState extends State<CalculatorHome> {
   String _expression = '';
   String _result = '0';
 
+  String _formatResult(String value) {
+    final match = RegExp(r'^(-?)(\d+)(?:\.(\d+))?$').firstMatch(value);
+    if (match == null) return value;
+
+    final sign = match.group(1)!;
+    final integerPart = match.group(2)!;
+    final decimalPart = match.group(3);
+    final groupedInteger = integerPart.replaceAllMapped(
+      RegExp(r'\B(?=(\d{3})+(?!\d))'),
+      (_) => '.',
+    );
+
+    return '$sign$groupedInteger'
+        '${decimalPart == null ? '' : ',$decimalPart'}';
+  }
+
   // Special mode state
   bool _checkSpecialMode = false;
   String _specialSequence = '';
@@ -313,7 +329,7 @@ class _CalculatorHomeState extends State<CalculatorHome> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    _result,
+                    _formatResult(_result),
                     key: const Key('result_display'),
                     style: const TextStyle(
                       fontSize: 48,
